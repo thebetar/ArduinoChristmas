@@ -7,11 +7,11 @@
 // Define pins for buzzers
 const unsigned int treePin = 2;
 const unsigned int ledPin = 13; // The pin number of the led
-const unsigned int led2Pin = 11; // The pin number of the led
-const unsigned int buttonPin = 12; // The pin number of the button
-const unsigned int buzzer1Pin = 7; // The pin number of the first buzzer
+const unsigned int led2Pin = 12; // The pin number of the led
+const unsigned int buttonPin = 11; // The pin number of the button
+const unsigned int buzzer1Pin = 9; // The pin number of the first buzzer
 const unsigned int buzzer2Pin = 8; // The pin numnber of the second buzzer
-const unsigned int buzzer3Pin = 9; // The pin numnber of the third buzzer
+const unsigned int buzzer3Pin = 7; // The pin numnber of the third buzzer
 
 // Define melody and durations
 int melody[] = {
@@ -226,13 +226,31 @@ void playSong(void) {
   musicToggle = 0;
 }
 
+// Variables to run the song every one hour
+unsigned long lastPlayTime = 0;
+const unsigned long oneHourMillis = 3600000;
+
 void loop(void)
 {
+  // Get current time in ms since arduino started running
+  unsigned long currentMillis = millis();
+
   // Read the state of the pushbutton value:
   unsigned int reading = digitalRead(buttonPin);
 
   // If button is pressed and music is not already playing
   if (reading == 1 && musicToggle == 0) {
     playSong();
+
+    // Update the time the song was played
+    lastPlayTime = currentMillis; 
+  }
+
+  // If song was played more than one hour ago and musicToggle = 0
+  if (currentMillis - lastPlayTime >= oneHourMillis && musicToggle == 0) {
+    playSong();
+
+    // Update the time the song was played
+    lastPlayTime = currentMillis; 
   }
 }
